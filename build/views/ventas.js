@@ -276,11 +276,11 @@ function getView(){
                                         <div class="form-group">
                                             <label>Tipo:</label>
                                             <select class="form-control negrita text-danger" id="cmbTipoCliente">
-                                                <option value="casa_particular">CASA PARTICULAR</option>
-                                                <option value="tienda">TIENDA</option>
-                                                <option value="empresarial">EMPRESARIAL</option>
-                                                <option vaue="centros_deportivos">CENTROS DEPORTIVOS</option>
-                                                <option value="centros_educativos">CENTROS EDUCATIVOS</option>
+                                                <option value="CASA_PARTICULAR">CASA PARTICULAR</option>
+                                                <option value="TIENDA">TIENDA</option>
+                                                <option value="EMPRESARIAL">EMPRESARIAL</option>
+                                                <option vaue="CENTROS_DEPORTIVOS">CENTROS DEPORTIVOS</option>
+                                                <option value="CENTROS_EDUCATIVOS">CENTROS EDUCATIVOS</option>
                                             </select>
                                         </div>
 
@@ -402,39 +402,50 @@ function addListeners(){
         .then((value)=>{
             if(value==true){
 
-                let tipo = document.getElementById('cmbTipoCliente').value;
-                let nombre = document.getElementById('txtNombreCliente').value;
-                let direccion = document.getElementById('txtDireccionCliente').value;
-                let telefono = document.getElementById('txtTelefonoCliente').value;
-                let referencia = document.getElementById('txtReferenciaCliente').value;
-                let visita = document.getElementById('cmbVisitaCliente').value;
-                let latitud = '0';
-                let longitud = '0';
+
+                F.ObtenerUbicacion()
+                .then((location)=>{
+
+                        let tipo = document.getElementById('cmbTipoCliente').value;
+                        let nombre = document.getElementById('txtNombreCliente').value || '';
+                        let direccion = document.getElementById('txtDireccionCliente').value || '';
+                        let telefono = document.getElementById('txtTelefonoCliente').value || '';
+                        let referencia = document.getElementById('txtReferenciaCliente').value;
+                        let visita = document.getElementById('cmbVisitaCliente').value;
+                        let latitud = location.latitude;
+                        let longitud = location.longitude;
 
 
-                btnGuardarCliente.disabled = true;
-                btnGuardarCliente.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
+                        btnGuardarCliente.disabled = true;
+                        btnGuardarCliente.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
 
-                insert_cliente(tipo,nombre,direccion,telefono,referencia,visita,latitud,longitud)
-                .then(()=>{
+                        insert_cliente(tipo,nombre,direccion,telefono,referencia,visita,latitud,longitud)
+                        .then(()=>{
+                            
+                            F.Aviso('Cliente guardado exitosamente!!');
+                            
+                            document.getElementById('txtFiltrar').value = nombre;
+                            get_lista_clientes();
+
+                            $("#modal_nuevo_cliente").modal('hide');
+                            limpiar_datos_cliente();
+
+                            btnGuardarCliente.disabled = false;
+                            btnGuardarCliente.innerHTML = `<i class="fal fa-save"></i>`;
+
+                        })
+                        .catch(()=>{
+                            F.AvisoError('No se pudo guardar el cliente');
+                            btnGuardarCliente.disabled = false;
+                            btnGuardarCliente.innerHTML = `<i class="fal fa-save"></i>`;
+                        })  
                     
-                    F.Aviso('Cliente guardado exitosamente!!');
-                    
-                    document.getElementById('txtFiltrar').value = nombre;
-                    get_lista_clientes();
-
-                    $("#modal_nuevo_cliente").modal('hide');
-                    limpiar_datos_cliente();
-
-                    btnGuardarCliente.disabled = false;
-                    btnGuardarCliente.innerHTML = `<i class="fal fa-save"></i>`;
-
                 })
                 .catch(()=>{
-                    F.AvisoError('No se pudo guardar el cliente');
-                    btnGuardarCliente.disabled = false;
-                    btnGuardarCliente.innerHTML = `<i class="fal fa-save"></i>`;
-                })  
+                    F.AvisoError('No puedes guardar un cliente sin ubicacion GPS')
+                })
+
+                
 
             }
         })
