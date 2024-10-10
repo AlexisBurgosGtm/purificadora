@@ -137,7 +137,7 @@ app.post("/lista_empleado",function(req,res){
   //const {filtro} = req.body;
 
   let qry = `SELECT CODEMP,TIPO,NOMBRE,TELEFONO,CLAVE,LATITUD,LONGITUD,HABILITADO, RUTA
-            FROM POS_EMPLEADOS `
+            FROM POS_EMPLEADOS ORDER BY TIPO, NOMBRE`
 
 
   execute.Query(res,qry)
@@ -146,12 +146,12 @@ app.post("/lista_empleado",function(req,res){
 
 app.post("/insert_empleado",function(req,res){
 
-  const {tipo,nombre,telefono,clave,ruta} = req.body;
+  const {tipo,nombre,telefono,clave,ruta,latitud,longitud} = req.body;
 
   let qry = `INSERT INTO POS_EMPLEADOS 
               (TIPO,NOMBRE,TELEFONO,CLAVE,LATITUD,LONGITUD,HABILITADO,RUTA)
                 VALUES
-              ('${tipo}','${nombre}','${telefono}','${clave}','0','0','SI','${ruta}')
+              ('${tipo}','${nombre}','${telefono}','${clave}','${latitud}','${longitud}','SI','${ruta}')
             `
 
       

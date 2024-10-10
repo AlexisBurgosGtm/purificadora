@@ -45,6 +45,7 @@ function getView(){
                             <thead class="bg-naranja text-white">
                                 <tr>
                                     <td>TIPO</td>
+                                    <td>RUTA</td>
                                     <td>NOMBRE</td>
                                     <td>TELEFONO</td>
                                     <td>CLAVE</td>
@@ -84,8 +85,8 @@ function getView(){
                                         <div class="form-group">
                                             <label>Tipo:</label>
                                             <select class="form-control negrita text-danger" id="cmbTipoEmpleado">
-                                                <option value="vendedor">VENDEDOR</option>
-                                                <option value="gerente">GERENTE</option>
+                                                <option value="VENDEDOR">VENDEDOR</option>
+                                                <option value="GERENTE">GERENTE</option>
                                             </select>
                                         </div>
 
@@ -102,6 +103,20 @@ function getView(){
                                         <div class="form-group">
                                             <label>Clave:</label>
                                             <input type="text" class="form-control" id="txtClaveEmpleado"/>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Ruta:</label>
+                                            <select class="form-control negrita text-danger" id="cmbRutaEmpleado">
+                                                <option value="SN">SIN RUTA</option>
+                                                <option value="RUTA A">RUTA A</option>
+                                                <option value="RUTA B">RUTA B</option>
+                                                <option value="RUTA C">RUTA C</option>
+                                                <option value="RUTA D">RUTA D</option>
+                                                <option value="RUTA E">RUTA E</option>
+                                                <option value="RUTA F">RUTA F</option>
+                                                <option value="RUTA G">RUTA G</option>
+                                            </select>
                                         </div>
 
                                     </div>
@@ -144,8 +159,8 @@ function getView(){
                                         <div class="form-group">
                                             <label>Tipo:</label>
                                             <select class="form-control negrita text-danger" id="cmbTipoEmpleadoE">
-                                                <option value="vendedor">VENDEDOR</option>
-                                                <option value="gerente">GERENTE</option>
+                                                <option value="VENDEDOR">VENDEDOR</option>
+                                                <option value="GERENTE">GERENTE</option>
                                             </select>
                                         </div>
 
@@ -162,6 +177,20 @@ function getView(){
                                         <div class="form-group">
                                             <label>Clave:</label>
                                             <input type="text" class="form-control" id="txtClaveEmpleadoE"/>
+                                        </div>
+
+                                         <div class="form-group">
+                                            <label>Ruta:</label>
+                                            <select class="form-control negrita text-danger" id="cmbRutaEmpleadoE">
+                                                <option value="SN">SIN RUTA</option>
+                                                <option value="RUTA A">RUTA A</option>
+                                                <option value="RUTA B">RUTA B</option>
+                                                <option value="RUTA C">RUTA C</option>
+                                                <option value="RUTA D">RUTA D</option>
+                                                <option value="RUTA E">RUTA E</option>
+                                                <option value="RUTA F">RUTA F</option>
+                                                <option value="RUTA G">RUTA G</option>
+                                            </select>
                                         </div>
 
                                     </div>
@@ -219,11 +248,12 @@ function addListeners(){
                 let latitud = '0';
                 let longitud = '0';
                 let habilitado = 'SI';
+                let ruta = document.getElementById('cmbRutaEmpleado').value;
 
                 btnGuardarEmpleado.disabled = true;
                 btnGuardarEmpleado.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
 
-                insert_empleado(tipo,nombre,telefono,clave,latitud,longitud,habilitado)
+                insert_empleado(tipo,nombre,telefono,clave,ruta)
                 .then(()=> {
                     
                     F.Aviso('Empleado guardado exitosamente!!!');    
@@ -238,6 +268,46 @@ function addListeners(){
                     F.AvisoError('No se pudo guardar el empleado');
                     btnGuardarEmpleado.disabled = false;
                     btnGuardarEmpleado.innerHTML = `<i class="fal fa-save"></i>`;
+
+                })
+
+            }
+        })
+
+    })
+
+
+    let btnEditarEmpleado = document.getElementById('btnEditarEmpleado');
+    btnEditarEmpleado.addEventListener('click', ()=> {
+
+        F.Confirmacion("¿Está seguro que desear editar el producto?")
+        .then((value) => {
+            if(value==true) {
+                
+                let tipoE = document.getElementById('cmbTipoEmpleadoE').value;
+                let nombreE = document.getElementById('txtNombreEmpleadoE').value;
+                let telefonoE = document.getElementById('txtTelefonoEmpleadoE').value;
+                let claveE = document.getElementById('txtClaveEmpleadoE').value;
+                let rutaE = document.getElementById("cmbRutaEmpleadoE").value;
+
+                btnEditarEmpleado.disabled = true;
+                btnEditarEmpleado.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
+
+                update_empleado(selected_codempleado,tipoE,nombreE,telefonoE,claveE,rutaE)
+                .then(() => {
+                  
+                    F.Aviso('Empleado editado exitosamente!!!');
+                    get_lista_empleados()
+                    $("#modal_editar_empleado").modal('hide');
+                    limpiar_datos_empleado();
+
+                    btnEditarEmpleado.disabled = false;
+                    btnEditarEmpleado.innerHTML = `<i class="fal fa-save"></i>`;
+                })
+                .catch(()=> {
+                    F.AvisoError('No se pudo guardar el empleado');
+                    btnEditarEmpleado.disabled = false;
+                    btnEditarEmpleado.innerHTML = `<i class="fal fa-save"></i>`;
 
                 })
 
@@ -282,6 +352,7 @@ function get_lista_empleados(){
                 str += `
                                 <tr>
                                     <td>${r.TIPO}</td>
+                                    <td>${r.RUTA}</td>
                                     <td>${r.NOMBRE}</td>
                                     <td>${r.TELEFONO}</td>
                                     <td>${r.CLAVE}</td>
@@ -295,7 +366,7 @@ function get_lista_empleados(){
                                     </td>
                                     <td>
                                     <button class="btn btn-info btn-circle btn-md hand shadow" 
-                                    onclick="get_datos_empleado('${r.CODEMP}','${r.TIPO}','${r.NOMBRE}','${r.TELEFONO}','${r.CLAVE}')">
+                                    onclick="get_datos_empleado('${r.CODEMP}','${r.TIPO}','${r.NOMBRE}','${r.TELEFONO}','${r.CLAVE}','${r.RUTA}')">
                                         <i class="fal fa-edit"></i>
                                     </button>
                                     </td>
@@ -314,14 +385,17 @@ function get_lista_empleados(){
 
 
 
-function insert_empleado(tipo,nombre,telefono,clave) {
+function insert_empleado(tipo,nombre,telefono,clave,ruta) {
     return new Promise((resolve, reject) => {
 
         axios.post('/insert_empleado', {
             tipo:tipo,
             nombre:nombre,
             telefono:telefono,
-            clave:clave
+            clave:clave,
+            ruta:ruta,
+            latitud:'0',
+            longitud:'0'
         })
         .then((response) => {
             let data = response.data;
@@ -338,7 +412,7 @@ function insert_empleado(tipo,nombre,telefono,clave) {
 }
 
 
-function get_datos_empleado(codemp,tipo,nombre,telefono,clave){
+function get_datos_empleado(codemp,tipo,nombre,telefono,clave,ruta){
 
     $("#modal_editar_empleado").modal('show')   
     
@@ -346,49 +420,13 @@ function get_datos_empleado(codemp,tipo,nombre,telefono,clave){
     document.getElementById("txtNombreEmpleadoE").value = nombre;
     document.getElementById("txtTelefonoEmpleadoE").value = telefono;
     document.getElementById("txtClaveEmpleadoE").value = clave;
+    document.getElementById("cmbRutaEmpleadoE").value = ruta;
 
-
-    let btnEditarEmpleado = document.getElementById('btnEditarEmpleado');
-    btnEditarEmpleado.addEventListener('click', ()=> {
-
-        F.Confirmacion("¿Está seguro que desear editar el producto?")
-        .then((value) => {
-            if(value==true) {
-                
-                let tipoE = document.getElementById('cmbTipoEmpleadoE').value;
-                let nombreE = document.getElementById('txtNombreEmpleadoE').value;
-                let telefonoE = document.getElementById('txtTelefonoEmpleadoE').value;
-                let claveE = document.getElementById('txtClaveEmpleadoE').value;
-
-                btnEditarEmpleado.disabled = true;
-                btnEditarEmpleado.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
-
-                update_empleado(codemp,tipoE,nombreE,telefonoE,claveE)
-                .then(() => {
-                  
-                    F.Aviso('Empleado editado exitosamente!!!');
-                    get_lista_empleados()
-                    $("#modal_editar_empleado").modal('hide');
-                    limpiar_datos_empleado();
-
-                    btnEditarEmpleado.disabled = false;
-                    btnEditarEmpleado.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
-                })
-                .catch(()=> {
-                    F.AvisoError('No se pudo guardar el empleado');
-                    btnEditarEmpleado.disabled = false;
-                    btnEditarEmpleado.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
-
-                })
-
-            }
-        })
-
-    })
+    selected_codempleado = Number(codemp);
 
 }
 
-function update_empleado(codemp,tipo,nombre,telefono,clave) {
+function update_empleado(codemp,tipo,nombre,telefono,clave,ruta) {
     return new Promise((resolve, reject) => {
 
         axios.post('/update_empleado', {
@@ -396,7 +434,8 @@ function update_empleado(codemp,tipo,nombre,telefono,clave) {
             tipo:tipo,
             nombre:nombre,
             telefono:telefono,
-            clave:clave
+            clave:clave,
+            ruta:ruta
         })
         .then((response) => {
             let data = response.data;

@@ -11,6 +11,7 @@ let GlobalUsuario = '';
 let GlobalPass = '';
 let GlobalNivelUsuario = 0;
 let GlobalCodemp = 0;
+let selected_codempleado = 0;
 
 // Variable global obtener tipo de usuarios
 let GlobalTipoUsuario = '';
