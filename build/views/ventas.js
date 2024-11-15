@@ -525,23 +525,30 @@ function addListeners(){
         .then((value)=>{
             if(value==true){
 
+                btnGuardarCliente.disabled = true;
+                btnGuardarCliente.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
+
+                F.showToast('Obteniendo ubicacion del gps...');
+
+                console.log('obteniendo gps...')
 
                 F.ObtenerUbicacion()
                 .then((location)=>{
+
+                    console.log('gps obtenido...')
 
                         let tipo = document.getElementById('cmbTipoCliente').value;
                         let nombre = F.limpiarTexto(document.getElementById('txtNombreCliente').value) || '';
                         let direccion = F.limpiarTexto(document.getElementById('txtDireccionCliente').value) || '';
                         let telefono = document.getElementById('txtTelefonoCliente').value || '';
-                        let referencia = F.limpiarTexto(document.getElementById('txtReferenciaCliente').value);
+                        let referencia = F.limpiarTexto(document.getElementById('txtReferenciaCliente').value || '');
                         let visita = document.getElementById('cmbVisitaCliente').value;
-                        let garrafones = document.getElementById('txtGarrafonesCliente').value|| '0';
+                        let garrafones = document.getElementById('txtGarrafonesCliente').value || '0';
                         let latitud = location.latitude;
                         let longitud = location.longitude;
 
-
-                        btnGuardarCliente.disabled = true;
-                        btnGuardarCliente.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
+                      
+                        console.log('insertando cliente...')
 
                         insert_cliente(tipo,nombre,direccion,telefono,referencia,visita,latitud,longitud,garrafones)
                         .then(()=>{
@@ -552,6 +559,7 @@ function addListeners(){
                             get_lista_clientes();
 
                             $("#modal_nuevo_cliente").modal('hide');
+
                             limpiar_datos_cliente();
 
                             btnGuardarCliente.disabled = false;
@@ -566,7 +574,10 @@ function addListeners(){
                     
                 })
                 .catch(()=>{
-                    F.AvisoError('No puedes guardar un cliente sin ubicacion GPS')
+                    F.AvisoError('No puedes guardar un cliente sin ubicacion GPS');
+                    
+                    btnGuardarCliente.disabled = false;
+                    btnGuardarCliente.innerHTML = `<i class="fal fa-save"></i>`;
                 })
 
                 
@@ -581,9 +592,6 @@ function addListeners(){
 
     let btnGuardarPedido = document.getElementById('btnGuardarPedido');
     btnGuardarPedido.addEventListener('click',()=>{
-
-            
-           
 
 
             F.Confirmacion("¿Está seguro que desea Guardar esta Venta?")

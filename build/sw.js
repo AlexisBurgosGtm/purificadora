@@ -1,9 +1,11 @@
-const staticCacheName = 'pre-cache-v1';
-const dynamicCacheName = 'runtime-cache-v1';
+const staticCacheName = 'pre-cache-sp1';
+const dynamicCacheName = 'runtime-cache-sp1';
 
 // Pre Caching Assets
 const precacheAssets = [
     '/',
+    './desing/alexis_especial.css',
+    './desing/alexis_especial.js',
     './css/vendors.bundle.css',
     './css/sb-admin-2.css',
     './css/fa-solid.css',
@@ -57,18 +59,12 @@ const precacheAssets = [
     './vendor/jquery/jquery.js',
     './vendor/fontawesome-free/css/all.css',
     './vendor/chart.js/Chart.min.js',
-    './views/vendedor/vendedor.js',
-    './views/vendedor/reparto.js',
-    './views/vendedor/mapaclientes.js',
-    './views/vendedor/facturacion.js',
-    './views/vendedor/censo.js',
-    './views/vendedor/vendedorlogro.js',
-    './views/vendedor/clientes.js',
-    './views/supervisor/config.js',
-    './views/supervisor/mapa.js',
-    './views/supervisor/ventas.js',
-    './views/login/index.js',
-    './views/programador.js',
+    './views/ventas.js',
+    './views/productos.js',
+    './views/gerencia.js',
+    './views/clientes.js',
+    './views/dashboard_gerencia.js',
+    './views/login.js',
     './favicon.png',
     './listaprecios.js',
     './sw.js',
@@ -78,20 +74,49 @@ const precacheAssets = [
 ];
 
 
+
+// INSTALL Event
 self.addEventListener('install', function (event) {
-    
-    
+
+    event.waitUntil(
+        caches.open(staticCacheName).then(function (cache) {
+            return cache.addAll(precacheAssets);
+        })
+    );
 
 });
 
 
+// ACTIVATE Event
 self.addEventListener('activate', function (event) {
     
-  
+    event.waitUntil(
+        caches.keys().then(keys => {
+            return Promise.all(keys
+                .filter(key => key !== staticCacheName && key !== dynamicCacheName)
+                .map(key => caches.delete(key))
+            );
+        })
+    );
 });
 
 
+// FETCH Event
 self.addEventListener('fetch', function (event) {
     
-    
+    event.respondWith(
+        caches.match(event.request).then(cacheRes => {
+            return cacheRes || fetch(event.request).then(response => {
+                return caches.open(dynamicCacheName).then(function (cache) {
+                    cache.put(event.request, response.clone());
+                    return response;
+                })
+            });
+        }).catch(function() {
+            // Fallback Page, When No Internet Connection
+            return caches.match('offline.html');
+          })
+    );
 });
+
+
