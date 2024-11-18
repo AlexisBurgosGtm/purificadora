@@ -30,7 +30,7 @@ function getView(){
                 <div class="col-12 p-0 bg-white">
                     <div class="tab-content" id="myTabHomeContent">
                         <div class="tab-pane fade show active" id="uno" role="tabpanel" aria-labelledby="receta-tab">
-                            ${view.vista_listado()}
+                            ${view.menu_principal()}
                         </div>
                         <div class="tab-pane fade" id="dos" role="tabpanel" aria-labelledby="home-tab">
                            ${view.rpt_fechas()}
@@ -40,6 +40,9 @@ function getView(){
                         </div>  
                         <div class="tab-pane fade" id="cuatro" role="tabpanel" aria-labelledby="home-tab">
                             ${view.rpt_clientes()}
+                        </div> 
+                        <div class="tab-pane fade" id="cinco" role="tabpanel" aria-labelledby="home-tab">
+                            ${view.rpt_garrafones()}
                         </div>    
                     </div>
 
@@ -59,6 +62,10 @@ function getView(){
                         <li class="nav-item">
                             <a class="nav-link negrita text-danger" id="tab-cuatro" data-toggle="tab" href="#cuatro" role="tab" aria-controls="home" aria-selected="true">
                                 <i class="fal fa-comments"></i></a>
+                        </li>  
+                        <li class="nav-item">
+                            <a class="nav-link negrita text-danger" id="tab-cinco" data-toggle="tab" href="#cinco" role="tab" aria-controls="home" aria-selected="true">
+                                <i class="fal fa-comments"></i></a>
                         </li>         
                     </ul>
                     
@@ -66,7 +73,7 @@ function getView(){
                
             `
         },
-        vista_listado:()=>{
+        menu_principal:()=>{
             return `
         
             <br>
@@ -119,6 +126,21 @@ function getView(){
                         </div>
                 </div>
 
+                <div class="col-md-3 col-lg-3 col-xl-3 col-sm-6 hidden">
+                        
+                        <div class="flip-card hand" onclick='document.getElementById("tab-cinco").click()'>
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <p class="title">Clientes con Garrafon</p>
+                                    <p></p>
+                                </div>
+                                <div class="flip-card-back">
+                                    <p class="title">Clientes con Garrafon</p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
             </div>
             `
         },
@@ -141,6 +163,8 @@ function getView(){
         },
         rpt_fechas:()=>{
             return `
+            <div class="row">
+                <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
                     <div class="card card-rounded shadow col-12">
                         <div class="card-body p-2">
                            
@@ -166,6 +190,36 @@ function getView(){
 
                         </div>
                     </div>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
+                    <div class="card card-rounded shadow col-12">
+                        <div class="card-body p-2">
+                           
+                                <div class="table-responsive">
+                                    
+                                    <h5 class="negrita text-naranja text-right">Ventas por Vendedor del Mes</h5>
+
+                                    <table class="table table-hover h-full">
+                                        <thead class="bg-naranja text-white">
+                                            <tr>
+                                                <th>VENDEDOR</th>
+                                                <th>COSTO</th>
+                                                <th>IMPORTE</th>
+                                                <th>UTILIDAD</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblDataVendedores">
+                                           
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                    
 
                     <button class="btn btn-secondary btn-xl btn-circle btn-bottom-l hand shadow" onclick="document.getElementById('tab-uno').click()">
                         <i class="fal fa-arrow-left"></i>
@@ -255,6 +309,55 @@ function getView(){
                     </button>
             `
         },
+        rpt_garrafones:()=>{
+            return `
+                <div class="row">
+                    <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
+                    
+                        <div class="card card-rounded shadow col-12">
+                            <div class="card-body p-2">
+                            
+                                    <div class="table-responsive">
+                                        <table class="table table-hover h-full">
+
+                                            <h5 class="negrita text-secondary text-right" id="lbTotalClientes">Q 0.00</h5>
+                                            
+                                            <thead class="bg-secondary text-white">
+                                                <tr>
+                                                    <th>CLIENTE</th>
+                                                    <th>COSTO</th>
+                                                    <th>IMPORTE</th>
+                                                    <th>UTILIDAD</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tblDataClientes">
+                                            
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                            </div>
+                        </div>
+                    
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
+                        <div class="card card-rounded shadow col-12">
+                            <div class="card-body p-2">
+                                <div class="col-12" id="rootMapa">
+                            
+                                  
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+
+                    <button class="btn btn-secondary btn-xl btn-circle btn-bottom-l hand shadow" onclick="document.getElementById('tab-uno').click()">
+                        <i class="fal fa-arrow-left"></i>
+                    </button>
+            `
+        },
     }
 
     root.innerHTML = view.body();
@@ -276,12 +379,16 @@ function addListeners(){
 
         document.getElementById('cmbMes').addEventListener('change',()=>{
             get_tbl_fechas();
+            get_tbl_Vendedores();
+
             get_tbl_productos();
             get_tbl_clientes();
         });
 
         document.getElementById('cmbAnio').addEventListener('change',()=>{
             get_tbl_fechas();
+            get_tbl_Vendedores();
+
             get_tbl_productos();
             get_tbl_clientes();
         });
@@ -310,6 +417,7 @@ function addListeners(){
 
 
         get_tbl_fechas();
+        get_tbl_Vendedores();
 
         get_tbl_productos();
 
@@ -386,6 +494,67 @@ function get_tbl_fechas(){
     })
     .catch(()=>{
         document.getElementById('lbTotalFechas').textContent = '--.--'
+        container.innerHTML ='No se cargaron datos...'
+    })
+
+};
+
+function get_data_vendedores(mes,anio){
+
+    return new Promise((resolve,reject)=>{
+
+                axios.post('/rpt_ventas_vendedores', 
+                    {
+                        mes:mes,
+                        anio:anio
+                    }
+                ).then((response) => {
+                    let data = response.data;
+                    if(Number(data.rowsAffected[0])>0) {
+                        resolve(data);
+                    } else {
+                        reject();
+                    }
+                }, (error) => {
+                    reject();
+                });
+
+    })
+
+
+};
+
+function get_tbl_Vendedores(){
+
+    let container = document.getElementById('tblDataVendedores');
+    container.innerHTML = GlobalLoader;
+
+    let mes = document.getElementById('cmbMes').value;
+    let anio = document.getElementById('cmbAnio').value;
+
+
+    get_data_vendedores(mes,anio)
+    .then((data)=>{
+        let str = '';
+        let total = 0;
+        data.recordset.map((r)=>{
+            let utilidadQ = (Number(r.IMPORTE) - Number(r.COSTO))
+            let porc = (Number(utilidadQ) / Number(r.COSTO)) * 100;
+            total += Number(r.IMPORTE);
+            str += `
+                <tr>
+                    <td>${r.NOMEMP}</td>
+                    <td>${F.setMoneda(r.COSTO,'Q')}</td>
+                    <td>${F.setMoneda(r.IMPORTE,'Q')}</td>
+                    <td>${F.setMoneda(utilidadQ,'Q')} (<small class="text-danger">${F.setMoneda(porc,'')}%</small>)</td>
+                </tr>
+            `
+        })
+        //document.getElementById('lbTotalFechas').textContent = F.setMoneda(total,'Q')
+        container.innerHTML = str;
+    })
+    .catch(()=>{
+        //document.getElementById('lbTotalFechas').textContent = '--.--'
         container.innerHTML ='No se cargaron datos...'
     })
 
@@ -595,7 +764,7 @@ function Lmap(lat,long){
 
       L.marker([lat, long],{icon:userIcon})
         .addTo(map)
-        .bindPopup('Mi Ubicación', {closeOnClick: true, autoClose: false})   
+        .bindPopup('Bodega', {closeOnClick: true, autoClose: false})   
         .openPopup()
                 
       return map;

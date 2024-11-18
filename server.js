@@ -71,6 +71,24 @@ app.post("/rpt_ventas_fechas",function(req,res){
 
 }); 
 
+app.post("/rpt_ventas_vendedores",function(req,res){
+
+  const {anio,mes} = req.body;
+
+  let qry = `
+    SELECT POS_EMPLEADOS.NOMBRE AS NOMEMP, SUM(POS_ORDERS.TOTALCOSTO) AS COSTO, SUM(POS_ORDERS.TOTALPRECIO) AS IMPORTE, POS_EMPLEADOS.RUTA
+      FROM     POS_ORDERS LEFT OUTER JOIN
+                        POS_EMPLEADOS ON POS_ORDERS.CODEMP = POS_EMPLEADOS.CODEMP
+      WHERE  (YEAR(POS_ORDERS.FECHA) = ${anio}) AND (MONTH(POS_ORDERS.FECHA) = ${mes})
+      GROUP BY POS_EMPLEADOS.NOMBRE, POS_EMPLEADOS.RUTA
+      ORDER BY POS_EMPLEADOS.NOMBRE;
+    `
+
+
+  execute.Query(res,qry)
+
+}); 
+
 app.post("/rpt_ventas_productos",function(req,res){
 
   const {anio,mes} = req.body;
@@ -177,6 +195,48 @@ app.post("/lista_clientes",function(req,res){
 
 
     execute.Query(res,qry)
+
+}); 
+
+app.post("/lista_clientes_general",function(req,res){
+
+  const {tipo} = req.body;
+
+  let qry = '';
+
+  switch (tipo) {
+    case 'TODOS':
+        qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA
+              FROM POS_CLIENTES;`
+      break;
+    case 'GARRAFON':
+      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA
+              FROM POS_CLIENTES WHERE GARRAFONES > 0;`
+      break;
+    case 'SIN':
+      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA
+              FROM POS_CLIENTES WHERE GARRAFONES = 0;`
+      break;
+  }
+
+
+
+
+  execute.Query(res,qry)
+
+});
+
+app.post("/lista_clientes_historial",function(req,res){
+
+  const {codclie} = req.body;
+
+  let qry = `SELECT FECHA, DESPROD, CANTIDAD, PRECIO, TOTALPRECIO, CONCRE 
+        FROM POS_ORDERS 
+        WHERE CODCLIE=${codclie}
+        ORDER BY FECHA DESC, DESPROD`
+
+
+  execute.Query(res,qry)
 
 }); 
 
@@ -424,6 +484,7 @@ app.post("/listado_pedidos_vendedor_productos",function(req,res){
 
 
 app.use("/",router);
+
 
 app.use("*",function(req,res){
   res.redirect('/');

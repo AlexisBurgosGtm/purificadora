@@ -77,7 +77,8 @@ const precacheAssets = [
 
 // INSTALL Event
 self.addEventListener('install', function (event) {
-
+    return;
+    
     event.waitUntil(
         caches.open(staticCacheName).then(function (cache) {
             return cache.addAll(precacheAssets);
@@ -90,6 +91,8 @@ self.addEventListener('install', function (event) {
 // ACTIVATE Event
 self.addEventListener('activate', function (event) {
     
+    return;
+
     event.waitUntil(
         caches.keys().then(keys => {
             return Promise.all(keys
@@ -103,6 +106,8 @@ self.addEventListener('activate', function (event) {
 
 // FETCH Event
 self.addEventListener('fetch', function (event) {
+    
+    return;
     
     event.respondWith(
         caches.match(event.request).then(cacheRes => {
