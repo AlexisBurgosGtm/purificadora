@@ -76,9 +76,12 @@ app.post("/rpt_ventas_vendedores",function(req,res){
   const {anio,mes} = req.body;
 
   let qry = `
-    SELECT POS_EMPLEADOS.NOMBRE AS NOMEMP, SUM(POS_ORDERS.TOTALCOSTO) AS COSTO, SUM(POS_ORDERS.TOTALPRECIO) AS IMPORTE, POS_EMPLEADOS.RUTA
-      FROM     POS_ORDERS LEFT OUTER JOIN
-                        POS_EMPLEADOS ON POS_ORDERS.CODEMP = POS_EMPLEADOS.CODEMP
+    SELECT isnull(POS_EMPLEADOS.NOMBRE,'SN') AS NOMEMP, 
+        SUM(POS_ORDERS.TOTALCOSTO) AS COSTO, 
+        SUM(POS_ORDERS.TOTALPRECIO) AS IMPORTE, 
+        ISNULL(POS_EMPLEADOS.RUTA,'SN') AS RUTA
+      FROM  POS_ORDERS LEFT OUTER JOIN
+            POS_EMPLEADOS ON POS_ORDERS.CODEMP = POS_EMPLEADOS.CODEMP
       WHERE  (YEAR(POS_ORDERS.FECHA) = ${anio}) AND (MONTH(POS_ORDERS.FECHA) = ${mes})
       GROUP BY POS_EMPLEADOS.NOMBRE, POS_EMPLEADOS.RUTA
       ORDER BY POS_EMPLEADOS.NOMBRE;
@@ -115,7 +118,8 @@ app.post("/rpt_ventas_clientes",function(req,res){
                   SUM(POS_ORDERS.TOTALCOSTO) AS COSTO, SUM(POS_ORDERS.TOTALPRECIO) AS IMPORTE
     FROM     POS_ORDERS LEFT OUTER JOIN
                   POS_CLIENTES ON POS_ORDERS.CODCLIE = POS_CLIENTES.CODCLIE
-    WHERE  (MONTH(POS_ORDERS.FECHA) = ${mes}) AND (YEAR(POS_ORDERS.FECHA) = ${anio}) 
+    WHERE  (MONTH(POS_ORDERS.FECHA) = ${mes}) 
+    AND (YEAR(POS_ORDERS.FECHA) = ${anio}) 
     GROUP BY POS_ORDERS.CODCLIE, POS_CLIENTES.TIPO, POS_CLIENTES.NOMBRE, POS_CLIENTES.DIRECCION, 
     POS_CLIENTES.TELEFONO, POS_CLIENTES.LATITUD, POS_CLIENTES.LONGITUD, POS_CLIENTES.RUTA
   `
@@ -190,7 +194,9 @@ app.post("/lista_clientes",function(req,res){
 
     const {filtro,ruta} = req.body;
 
-    let qry = `SELECT top 70 CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES
+    let qry = `SELECT top 70 CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,
+      REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,
+      ISNULL(FECHA,'2000-01-01') AS FECHA
       FROM POS_CLIENTES WHERE NOMBRE LIKE '%${filtro}%' AND RUTA='${ruta}';`
 
 
@@ -206,15 +212,21 @@ app.post("/lista_clientes_general",function(req,res){
 
   switch (tipo) {
     case 'TODOS':
-        qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA
+        qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,
+                VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA,
+                ISNULL(FECHA,'2000-01-01') AS FECHA
               FROM POS_CLIENTES;`
       break;
     case 'GARRAFON':
-      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA
+      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,
+              VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA,
+              ISNULL(FECHA,'2000-01-01') AS FECHA
               FROM POS_CLIENTES WHERE GARRAFONES > 0;`
       break;
     case 'SIN':
-      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA
+      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,
+            VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA,
+            ISNULL(FECHA,'2000-01-01') AS FECHA
               FROM POS_CLIENTES WHERE GARRAFONES = 0;`
       break;
   }
@@ -243,12 +255,15 @@ app.post("/lista_clientes_historial",function(req,res){
 
 app.post("/insert_cliente",function(req,res){
 
-  const {tipo,nombre,direccion,telefono,referencia,visita,latitud,longitud,ruta,garrafones} = req.body;
+  const {tipo,nombre,direccion,telefono,referencia,visita,latitud,longitud,ruta,garrafones,fecha} = req.body;
 
   let qry = `INSERT INTO POS_CLIENTES 
-              (TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,RUTA,GARRAFONES)
+              (TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,
+              LATITUD,LONGITUD,RUTA,GARRAFONES,FECHA)
                 VALUES
-              ('${tipo}','${nombre}','${direccion}','${telefono}','${referencia}','${visita}','${latitud}','${longitud}','${ruta}',${garrafones})
+              ('${tipo}','${nombre}','${direccion}','${telefono}',
+              '${referencia}','${visita}','${latitud}','${longitud}',
+              '${ruta}',${garrafones},'${fecha}');
             `
 
 
@@ -296,7 +311,21 @@ app.post("/insert_empleado",function(req,res){
 
   execute.Query(res,qry)
 
-}); 
+});
+
+app.post("/delete_empleado",function(req,res){
+
+  const {codemp} = req.body;
+
+  let qry = `DELETE FROM POS_EMPLEADOS
+              WHERE CODEMP=${codemp};
+            `
+
+      
+
+  execute.Query(res,qry)
+
+});
 
 
 app.post("/lista_producto", function(req, res) {
@@ -400,7 +429,12 @@ app.post("/lista_cliente",function(req,res){
 
   //const {filtro} = req.body;
 
-  let qry = `SELECT CODCLIE,DPI,NIT,TIPO,NOMBRE,DIRECCION,CODMUN,CODDEPTO,TELEFONO,REFERENCIA,VISITA,LATITUD,LONGITUD,RUTA,GARRAFONES
+  let qry = `SELECT CODCLIE,DPI,NIT,TIPO,NOMBRE,
+          DIRECCION,CODMUN,CODDEPTO,TELEFONO,
+            REFERENCIA,VISITA,LATITUD,LONGITUD,
+            RUTA,
+            ISNULL(GARRAFONES,0) AS GARRAFONES,
+            ISNULL(FECHA,'2000-01-01') AS FECHA
             FROM POS_CLIENTES `
 
 
@@ -427,6 +461,20 @@ app.post("/update_cliente", function(req, res) {
 
 
     execute.Query(res,qry);
+
+});
+
+app.post("/delete_cliente",function(req,res){
+
+  const {codclie} = req.body;
+
+  let qry = `DELETE FROM POS_CLIENTES
+              WHERE CODCLIE=${codclie};
+            `
+
+      
+
+  execute.Query(res,qry)
 
 });
 

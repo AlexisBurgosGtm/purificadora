@@ -535,7 +535,7 @@ function addListeners(){
                 F.ObtenerUbicacion()
                 .then((location)=>{
 
-                    console.log('gps obtenido...')
+                 
 
                         let tipo = document.getElementById('cmbTipoCliente').value;
                         let nombre = F.limpiarTexto(document.getElementById('txtNombreCliente').value) || '';
@@ -548,9 +548,8 @@ function addListeners(){
                         let longitud = location.longitude;
 
                       
-                        console.log('insertando cliente...')
 
-                        insert_cliente(tipo,nombre,direccion,telefono,referencia,visita,latitud,longitud,garrafones)
+                        insert_cliente(tipo,nombre.toUpperCase(),direccion.toUpperCase(),telefono,referencia.toUpperCase(),visita,latitud,longitud,garrafones)
                         .then(()=>{
                             
                             F.Aviso('Cliente guardado exitosamente!!');
@@ -894,18 +893,7 @@ function actualizarTotal() {
     })
 
 
-    return;
-    
-    getAllProductos().then(productos => {
-        let total = productos.reduce((sum, producto) => sum + (producto.cantidad * producto.PRECIO), 0);
-        
-        let elementoTotal = document.querySelector('.text-right.negrita.text-danger');
-        let mostrarTotalAPagar = document.getElementById('totalFinal');
-        if (elementoTotal) {
-            elementoTotal.textContent = F.setMoneda(total.toFixed(2), 'Q.');
-            mostrarTotalAPagar.textContent = F.setMoneda(total.toFixed(2), 'Q.');
-        }
-    });
+   
 }
 
 function insert_cliente(tipo,nombre,direccion,telefono,referencia,visita,latitud,longitud,garrafones){
@@ -922,7 +910,8 @@ function insert_cliente(tipo,nombre,direccion,telefono,referencia,visita,latitud
             latitud:latitud,
             longitud:longitud,
             ruta:GlobalRuta,
-            garrafones:garrafones
+            garrafones:garrafones,
+            fecha:F.getFecha()
         })
         .then((response) => {
             let data = response.data;

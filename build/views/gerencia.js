@@ -50,6 +50,8 @@ function getView(){
                                     <td>TELEFONO</td>
                                     <td>CLAVE</td>
                                     <td>HABILITADO</td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id="tblDataUsuarios">
@@ -242,18 +244,22 @@ function addListeners(){
             if(value==true) {
 
                 let tipo = document.getElementById('cmbTipoEmpleado').value;
-                let nombre = document.getElementById('txtNombreEmpleado').value;
-                let telefono = document.getElementById('txtTelefonoEmpleado').value;
-                let clave = document.getElementById('txtClaveEmpleado').value;
+                let nombre = document.getElementById('txtNombreEmpleado').value || '';
+                let telefono = document.getElementById('txtTelefonoEmpleado').value || '';
+                let clave = document.getElementById('txtClaveEmpleado').value || '';
                 let latitud = '0';
                 let longitud = '0';
                 let habilitado = 'SI';
-                let ruta = document.getElementById('cmbRutaEmpleado').value;
+                let ruta = document.getElementById('cmbRutaEmpleado').value || '0';
 
+                if(nombre==''){F.AvisoError('Indique un nombre de usuario');return;}
+                if(clave==''){F.AvisoError('Indique una clave de usuario');return;}
+
+                
                 btnGuardarEmpleado.disabled = true;
                 btnGuardarEmpleado.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
 
-                insert_empleado(tipo,nombre,telefono,clave,ruta)
+                insert_empleado(tipo,nombre.toUpperCase(),telefono,clave,ruta)
                 .then(()=> {
                     
                     F.Aviso('Empleado guardado exitosamente!!!');    
@@ -262,7 +268,7 @@ function addListeners(){
                     limpiar_datos_empleado();
 
                     btnGuardarEmpleado.disabled = false;
-                    btnGuardarEmpleado.innerHTML = `<i class="fal fa-save fa-spin"></i>`;
+                    btnGuardarEmpleado.innerHTML = `<i class="fal fa-save"></i>`;
                 })
                 .cath(()=> {
                     F.AvisoError('No se pudo guardar el empleado');
@@ -349,6 +355,7 @@ function get_lista_empleados(){
             data.recordset.map((r)=>{
                 let strHabilitado ="";
                 if(r.HABILITADO=='SI'){strHabilitado="btn-success"}else{strHabilitado="btn-danger"}
+                let idBtnE = `btnE${r.CODEMP}`;
                 str += `
                                 <tr>
                                     <td>${r.TIPO}</td>
@@ -365,10 +372,16 @@ function get_lista_empleados(){
 
                                     </td>
                                     <td>
-                                    <button class="btn btn-info btn-circle btn-md hand shadow" 
-                                    onclick="get_datos_empleado('${r.CODEMP}','${r.TIPO}','${r.NOMBRE}','${r.TELEFONO}','${r.CLAVE}','${r.RUTA}')">
-                                        <i class="fal fa-edit"></i>
-                                    </button>
+                                        <button class="btn btn-info btn-circle btn-md hand shadow" 
+                                        onclick="get_datos_empleado('${r.CODEMP}','${r.TIPO}','${r.NOMBRE}','${r.TELEFONO}','${r.CLAVE}','${r.RUTA}')">
+                                            <i class="fal fa-edit"></i>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button id="${idBtnE}" class="btn btn-danger btn-circle btn-md hand shadow" 
+                                        onclick="eliminar_empleado('${r.CODEMP}','${r.NOMBRE}','${idBtnE}')">
+                                            <i class="fal fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                 `
@@ -383,6 +396,43 @@ function get_lista_empleados(){
     });
 }
 
+function eliminar_empleado(codemp,nombre,idbtn){
+
+    let btn = document.getElementById(idbtn);
+
+    F.Confirmacion(`¿Está seguro que desea ELIMINAR a este USUARIO (${nombre})?`)
+    .then((value)=>{
+        if(value==true){
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fal fa-trash fa-spin"></i>`;
+
+                axios.post('/delete_empleado', {
+                    codemp:codemp
+                })
+                .then((response) => {
+                    let data = response.data;
+                    if(Number(data.rowsAffected[0])>0) {
+                        F.Aviso('Usuario eliminado exitosamente!!');
+                        get_lista_empleados();
+                    }else {
+                        F.AvisoError('No se pudo eliminar');
+                        btn.disabled = false;
+                        btn.innerHTML = `<i class="fal fa-trash"></i>`;
+
+                    }
+                }, (error) => {
+                    F.AvisoError('No se pudo eliminar');
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fal fa-trash"></i>`;
+                });
+
+        }
+    })
+
+
+
+};
 
 
 function insert_empleado(tipo,nombre,telefono,clave,ruta) {

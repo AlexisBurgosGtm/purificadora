@@ -47,16 +47,20 @@ function getView(){
                             
                         </div>
                     </div>
-                    <div class="table-responsive col-12">
+                    <div class="col-12">
 
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="form-group">
                                     <label>Escriba para Buscar un cliente</label>
-                                    <input type="text" class="form-control negrita text-naranja" oninput="F.FiltrarTabla('tblClientes','txtBuscar')" id="txtBuscar">
+                                    <input type="text" 
+                                    class="form-control negrita text-naranja" 
+                                    oninput="F.FiltrarTabla('tblClientes','txtBuscar')" 
+                                    id="txtBuscar"
+                                    placeholder="Escriba para buscar...">
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="form-group">
                                     <label>Filtrar por</label>
                                     <select class="form-control negrita text-danger" id="cmbFiltrar">
@@ -66,29 +70,38 @@ function getView(){
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-4">
+                                <h4 class="negrita text-info" id="lbTotalClientes">0</h4>
+                                <h4 class="negrita text-danger" id="lbTotalGarrafones">0</h4>
+                            </div>
                         </div>
                         
                         <br>
                         
 
-                        <table class="table table-responsive table-hover col-12" id="tblClientes">
-                            <thead class="bg-naranja text-white">
-                                <tr>
-                                    <td>TIPO</td>
-                                    <td>NOMBRE</td>
-                                    <td>DIRECCION</td>
-                                    <td>TELEFONO</td>
-                                    <td>REFERENCIA</td>
-                                    <td>VISITA</td>
-                                    <td>RUTA</td>
-                                    <td>GARRAFONES</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </thead>
-                            <tbody id="tblDataClientesCatalogo">
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+
+                            <table class="table table-hover col-12" id="tblClientes">
+                                <thead class="bg-naranja text-white">
+                                    <tr>
+                                        <td>TIPO</td>
+                                        <td>NOMBRE</td>
+                                        <td>DIRECCION</td>
+                                        <td>TELEFONO</td>
+                                        <td>REFERENCIA</td>
+                                        <td>VISITA</td>
+                                        <td>RUTA</td>
+                                        <td>GARRAFONES</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblDataClientesCatalogo">
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -302,7 +315,9 @@ function get_catalogo_clientes() {
     let str = '';
 
     let tipo = document.getElementById('cmbFiltrar').value;
-    
+    let contador = 0;
+    let garrafones = 0;
+
     axios.post('/lista_clientes_general', {
         filtro:'',
         tipo:tipo
@@ -311,10 +326,15 @@ function get_catalogo_clientes() {
         let data = response.data;
         if(Number(data.rowsAffected[0])>0) {
             data.recordset.map((r)=> {
-                
+                contador += 1;
+                garrafones += Number(r.GARRAFONES);
+                let idBtnEC = `idBtnEC${r.CODCLIE}`;
                 str += `
                         <tr>
-                            <td>${r.TIPO}</td>
+                            <td>${r.TIPO}
+                                <br>
+                                <small class="negrita text-danger">Creado: ${F.convertDateNormal(r.FECHA).replace('01/01/2000','-----')}</small>
+                            </td>
                             <td>${r.NOMBRE}</td>
                             <td>${r.DIRECCION}</td>
                             <td>${r.TELEFONO}</td>
@@ -334,17 +354,29 @@ function get_catalogo_clientes() {
                                     onclick="get_datos_cliente('${r.CODCLIE}','${r.TIPO}','${r.NOMBRE}','${r.DIRECCION}','${r.TELEFONO}','${r.REFERENCIA}','${r.VISITA}','${r.RUTA}','${r.GARRAFONES}')">
                                         <i class="fal fa-edit"></i>
                                     </button>
-
                             </td>
+                            <td>
+                                   <button id="${idBtnEC}" class="btn btn-danger btn-circle btn-md hand shadow" 
+                                    onclick="eliminar_cliente('${r.CODCLIE}','${r.NOMBRE}','${idBtnEC}')">
+                                        <i class="fal fa-trash"></i>
+                                    </button>
+                            </td>
+
                         </tr>
                 `;
             })
             container.innerHTML = str;
+            document.getElementById('lbTotalClientes').innerText = `Clientes ${contador}`;
+            document.getElementById('lbTotalGarrafones').innerText = `Garrafones ${garrafones}`;
         }else {
-            container.innerHTML = 'No hay datos...'
+            container.innerHTML = 'No hay datos...';
+            document.getElementById('lbTotalClientes').innerText = '0';
+            document.getElementById('lbTotalGarrafones').innerText = '0';
         }
     }, (error) => {
-        container.innerHTML = 'No hay datos...'
+        container.innerHTML = 'No hay datos...';
+        document.getElementById('lbTotalClientes').innerText = '0';
+        document.getElementById('lbTotalGarrafones').innerText = '0';
     });
     
 }
@@ -429,6 +461,42 @@ function get_datos_cliente(codclie,tipo,nombre,direccion,telefono,referencia,vis
     })
 }
 
+function eliminar_cliente(codclie,nomclie,idbtn){
+
+    let btn = document.getElementById(idbtn);
+
+    F.Confirmacion(`¿Está seguro que desea ELIMINAR a este CLIENTE (${nomclie})?`)
+    .then((value)=>{
+        if(value==true){
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fal fa-trash fa-spin"></i>`;
+
+                axios.post('/delete_cliente', {
+                    codclie:codclie
+                })
+                .then((response) => {
+                    let data = response.data;
+                    if(Number(data.rowsAffected[0])>0) {
+                        F.Aviso('Cliente eliminado exitosamente!!');
+                        get_catalogo_clientes();
+                    }else {
+                        F.AvisoError('No se pudo eliminar');
+                        btn.disabled = false;
+                        btn.innerHTML = `<i class="fal fa-trash"></i>`;
+
+                    }
+                }, (error) => {
+                    F.AvisoError('No se pudo eliminar');
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fal fa-trash"></i>`;
+                });
+
+        }
+    })
+
+
+};
 
 
 function limpiar_datos_clientes(){
