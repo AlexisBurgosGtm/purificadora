@@ -8,9 +8,6 @@ let config = {
 };
 
 
-
-
-
 const sql = require('mssql');
 
 let execute = {
