@@ -266,6 +266,7 @@ app.post("/insert_cliente",function(req,res){
               '${ruta}',${garrafones},'${fecha}');
             `
 
+            console.log(qry)
 
   execute.Query(res,qry)
 
