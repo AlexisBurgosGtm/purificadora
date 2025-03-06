@@ -4,7 +4,11 @@ let config = {
 	password: 'razors1805',
 	server: 'sql5094.site4now.net',
 	database: 'DB_A6478C_autoventa',
-	pool: {	max: 100,	min: 0,	idleTimeoutMillis: 30000}
+	pool: {	max: 100,	min: 0,	idleTimeoutMillis: 30000},
+	options: {
+		encrypt: false, // for azure
+		trustServerCertificate: true // change to true for local dev / self-signed certs
+	}
 };
 
 
