@@ -129,6 +129,24 @@ app.post("/rpt_ventas_clientes",function(req,res){
 
 }); 
 
+app.post("/rpt_clientes_ruta",function(req,res){
+
+  const {dia,ruta} = req.body;
+
+  let qry = `
+    SELECT TIPO, NOMBRE, POS_CLIENTES.DIRECCION,
+        POS_CLIENTES.TELEFONO,POS_CLIENTES.REFERENCIA,POS_CLIENTES.LATITUD,POS_CLIENTES.LONGITUD,
+        POS_CLIENTES.GARRAFONES
+        FROM POS_CLIENTES
+    WHERE VISITA='${dia}' AND RUTA='${ruta}';
+  `
+
+  console.log(qry)
+
+  execute.Query(res,qry)
+
+}); 
+
 
 app.post("/insert_pedido", function(req, res) {
 

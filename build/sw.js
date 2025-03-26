@@ -1,5 +1,5 @@
-const staticCacheName = 'pre-cache-sp4';
-const dynamicCacheName = 'runtime-cache-sp4';
+const staticCacheName = 'pre-cache-sp6';
+const dynamicCacheName = 'runtime-cache-sp6';
 
 // Pre Caching Assets
 const precacheAssets = [
@@ -91,7 +91,7 @@ self.addEventListener('install', function (event) {
 // ACTIVATE Event
 self.addEventListener('activate', function (event) {
     
-    ///return;
+    //return;
 
     event.waitUntil(
         caches.keys().then(keys => {

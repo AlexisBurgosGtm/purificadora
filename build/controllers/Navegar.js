@@ -32,6 +32,12 @@ let Navegar = {
             initView();
         })
     },
+    cobertura:()=> {
+        F.loadScript('./views/view_cobertura.js', 'root')
+        .then(()=> {
+            initView();
+        })
+    },
     dashboard_gerencia:() => {
         F.loadScript('./views/dashboard_gerencia.js', 'root')
         .then(() => {

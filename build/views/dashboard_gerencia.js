@@ -135,7 +135,7 @@ function getView(){
                                     <p></p>
                                 </div>
                                 <div class="flip-card-back">
-                                    <p class="title">Clientes con Garrafon</p>
+                                    <p class="title">PENDIENTE</p>
                                 </div>
                             </div>
                         </div>
@@ -157,6 +157,9 @@ function getView(){
                             </button>
                             <button class="btn btn-md btn-naranja" id="btnViewProductos">
                                 <i class="fal fa-box"></i>Productos
+                            </button>
+                            <button class="btn btn-md btn-naranja" id="btnViewCobertura">
+                                <i class="fal fa-map"></i>Cobertura Rutas
                             </button>
                             
             `
@@ -414,6 +417,10 @@ function addListeners(){
             Navegar.productos();
         });
 
+        let btnViewCobertura = document.getElementById('btnViewCobertura');
+        btnViewCobertura.addEventListener('click',()=>{
+            Navegar.cobertura();
+        })
 
 
         get_tbl_fechas();
