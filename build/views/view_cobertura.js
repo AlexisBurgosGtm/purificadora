@@ -163,7 +163,7 @@ function get_mapa_cobertura(){
                     })
 
             })
-            container.innerHTML = str;
+            //containerM.innerHTML = str;
             
             //RE-AJUSTA EL MAPA A LA PANTALLA
             setTimeout(function () {
@@ -175,7 +175,7 @@ function get_mapa_cobertura(){
             }, 500);
         })
         .catch(()=>{
-            container.innerHTML ='No se cargaron datos...'
+            containerM.innerHTML ='No se cargaron datos...'
         })
 
 

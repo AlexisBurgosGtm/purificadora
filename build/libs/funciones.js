@@ -398,7 +398,7 @@ let F = {
               <option value='2043'>2043</option>
               <option value='2044'>2044</option>
               <option value='2045'>2045</option>`
-    return str;
+      return str;
     },
     getFecha(){
       let fecha

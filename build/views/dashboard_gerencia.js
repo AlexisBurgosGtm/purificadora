@@ -43,6 +43,9 @@ function getView(){
                         </div> 
                         <div class="tab-pane fade" id="cinco" role="tabpanel" aria-labelledby="home-tab">
                             ${view.rpt_garrafones()}
+                        </div>
+                        <div class="tab-pane fade" id="seis" role="tabpanel" aria-labelledby="home-tab">
+                            ${view.rpt_visitados()}
                         </div>    
                     </div>
 
@@ -65,6 +68,10 @@ function getView(){
                         </li>  
                         <li class="nav-item">
                             <a class="nav-link negrita text-danger" id="tab-cinco" data-toggle="tab" href="#cinco" role="tab" aria-controls="home" aria-selected="true">
+                                <i class="fal fa-comments"></i></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link negrita text-danger" id="tab-seis" data-toggle="tab" href="#seis" role="tab" aria-controls="home" aria-selected="true">
                                 <i class="fal fa-comments"></i></a>
                         </li>         
                     </ul>
@@ -126,16 +133,16 @@ function getView(){
                         </div>
                 </div>
 
-                <div class="col-md-3 col-lg-3 col-xl-3 col-sm-6 hidden">
+                <div class="col-md-3 col-lg-3 col-xl-3 col-sm-6">
                         
-                        <div class="flip-card hand" onclick='document.getElementById("tab-cinco").click()'>
+                        <div class="flip-card hand" id="btnMenuVisitados">
                             <div class="flip-card-inner">
                                 <div class="flip-card-front">
-                                    <p class="title">Clientes con Garrafon</p>
+                                    <p class="title">Clientes No Visitados</p>
                                     <p></p>
                                 </div>
                                 <div class="flip-card-back">
-                                    <p class="title">PENDIENTE</p>
+                                    <p class="title">VISITAS</p>
                                 </div>
                             </div>
                         </div>
@@ -361,6 +368,86 @@ function getView(){
                     </button>
             `
         },
+        rpt_visitados:()=>{
+            return `
+                <div class="card card-rounded shadow col-12">
+                    <div class="card-body p-4">
+
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                
+                                <div class="form-group">
+                                    <label>Ruta</label>
+                                    <select class="form-control negrita" id="cmbVisitaRuta">
+                                        <option value="LUNES">LUNES</option>
+                                                <option value="MARTES">MARTES</option>
+                                                <option value="MIERCOLES">MIERCOLES</option>
+                                                <option value="JUEVES">JUEVES</option>
+                                                <option value="VIERNES">VIERNES</option>
+                                                <option value="SABADO">SABADO</option>
+                                                <option value="DOMINGO">DOMINGO</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                <div class="form-group">
+                                    <label>Fecha</label>
+                                    <input type="date" class="form-control negrita" id="txtVisitaFecha"> 
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                
+                    </div>
+                </div>
+
+                <br>
+                
+                <div class="card card-rounded shadow col-12">
+                    <div class="card-body p-4">
+                        
+                        <div class="table-responsive">
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <h3 class="negrita text-danger">Clientes No Visitados</h3>
+                                </div>
+                                <div class="col-6">
+                                
+                                    <h5 class="negrita text-info" id="lbVisitadosConteo"></h5>
+    
+                                
+                                </div>
+                            </div>
+
+                            
+                            <table class="table table-bordered col-12 h-full" id="tblVisitados">
+                                <thead class="bg-secondary text-white">
+                                    <tr>
+                                        <td>RUTERO</td>
+                                        <td>CLIENTE</td>
+                                        <td>DIRECCION</td>
+                                        <td>TELEFONO</td>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblDataVisitados">
+                                </tbody>
+                            </table>
+                        
+                        </div>
+
+
+                
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary btn-xl btn-circle btn-bottom-l hand shadow" onclick="document.getElementById('tab-uno').click()">
+                    <i class="fal fa-arrow-left"></i>
+                </button>
+            `
+        }
     }
 
     root.innerHTML = view.body();
@@ -432,6 +519,28 @@ function addListeners(){
         get_tbl_clientes();
 
 
+
+        document.getElementById('txtVisitaFecha').value = F.getFecha();
+
+        document.getElementById('txtVisitaFecha').addEventListener('change',()=>{
+            rpt_tbl_visitados();
+        });
+
+
+        document.getElementById('btnMenuVisitados').addEventListener('click',()=>{
+
+            document.getElementById("tab-seis").click();
+
+            rpt_tbl_visitados();
+
+        });
+
+
+
+        document.getElementById('btnMenuVisitados').addEventListener('change',()=>{
+            rpt_tbl_visitados();
+        });
+
 };
 
 function initView(){
@@ -440,6 +549,83 @@ function initView(){
     addListeners();
 
 };
+
+
+
+//reporte visitados
+
+function get_data_visitados(visita,fecha){
+
+    return new Promise((resolve,reject)=>{
+
+                axios.post('/rpt_ventas_visitados', 
+                    {
+                        visita:visita,
+                        fecha:fecha
+                    }
+                ).then((response) => {
+                    let data = response.data;
+                    if(Number(data.rowsAffected[0])>0) {
+                        resolve(data);
+                    } else {
+                        reject();
+                    }
+                }, (error) => {
+                    reject();
+                });
+
+    })
+
+
+};
+
+function rpt_tbl_visitados(){
+
+
+    let visita = document.getElementById('cmbVisitaRuta').value;
+    let fecha = F.devuelveFecha('txtVisitaFecha');
+
+    let container = document.getElementById('tblDataVisitados');
+    container.innerHTML = GlobalLoader;
+
+    let contador = 0;
+
+    get_data_visitados(visita,fecha)
+    .then((data)=>{
+
+        let str = '';
+        data.recordset.map((r)=>{
+            contador +=1;
+            str += `
+            <tr>
+                <td>${r.RUTERO}</td>
+                <td>${r.TIPONEGOCIO} - ${r.NOMCLIE}</td>
+                <td>${r.DIRCLIE}
+                    <br>
+                    <small>${r.REFERENCIA}</small>
+                </td>
+                <td>${r.TELEFONO}</td>
+            </tr>
+            `
+        })
+
+        container.innerHTML = str;
+        document.getElementById('lbVisitadosConteo').innerText = `Total: ${contador}`;
+    })
+    .catch(()=>{
+        container.innerHTML = 'No se cargaron datos';
+        document.getElementById('lbVisitadosConteo').innerText = '';
+    })
+
+
+
+
+
+};
+
+
+//reporte vistados
+
 
 
 //reporte de ventas por fecha y vendedor

@@ -147,6 +147,19 @@ app.post("/rpt_clientes_ruta",function(req,res){
 
 }); 
 
+app.post("/rpt_ventas_visitados",function(req,res){
+
+  const {visita,fecha} = req.body;
+
+  let qry = `
+    
+          `;
+
+
+  execute.Query(res,qry)
+
+}); 
+
 
 app.post("/insert_pedido", function(req, res) {
 
