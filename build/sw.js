@@ -1,5 +1,5 @@
-const staticCacheName = 'pre-cache-sp6';
-const dynamicCacheName = 'runtime-cache-sp6';
+const staticCacheName = 'pre-cache-sp8';
+const dynamicCacheName = 'runtime-cache-sp8';
 
 // Pre Caching Assets
 const precacheAssets = [
@@ -18,10 +18,8 @@ const precacheAssets = [
     './css/app.bundle.css',
     './controllers/GlobalVars.js',
     './controllers/dbcalls.js',
-    './controllers/customerVars.js',
-    './controllers/classNavegar.js',
-    './controllers/classDb.js',
-    './controllers/apicallsx.js',
+    './controllers/Navegar.js',
+    './controllers/db.js',
     './img/usericon.png',
     './img/logo.png',
     './img/cog.png',
@@ -66,7 +64,6 @@ const precacheAssets = [
     './views/dashboard_gerencia.js',
     './views/login.js',
     './favicon.png',
-    './listaprecios.js',
     './sw.js',
     './index.html',
     './index.js',

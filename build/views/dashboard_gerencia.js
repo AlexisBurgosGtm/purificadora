@@ -189,7 +189,7 @@ function getView(){
                                                 <th>VENDEDOR</th>
                                                 <th>COSTO</th>
                                                 <th>IMPORTE</th>
-                                                <th>UTILIDAD</th>
+                                                <th>UTILIDAD BRUTA</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tblDataFechas">
@@ -215,7 +215,7 @@ function getView(){
                                                 <th>VENDEDOR</th>
                                                 <th>COSTO</th>
                                                 <th>IMPORTE</th>
-                                                <th>UTILIDAD</th>
+                                                <th>UTILIDAD BRUTA</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tblDataVendedores">
@@ -253,7 +253,7 @@ function getView(){
                                                 <th>CANTIDAD</th>
                                                 <th>COSTO</th>
                                                 <th>IMPORTE</th>
-                                                <th>UTILIDAD</th>
+                                                <th>UTILIDAD BRUTA</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tblDataProductos">
@@ -288,7 +288,7 @@ function getView(){
                                                     <th>CLIENTE</th>
                                                     <th>COSTO</th>
                                                     <th>IMPORTE</th>
-                                                    <th>UTILIDAD</th>
+                                                    <th>UTILIDAD BRUTA</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tblDataClientes">
@@ -304,7 +304,7 @@ function getView(){
                     <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
                         <div class="card card-rounded shadow col-12">
                             <div class="card-body p-2">
-                                <div class="col-12" id="rootMapa">
+                                <div class="col-12" id="rootMapa"></div>
                             
                                   
 
@@ -337,7 +337,7 @@ function getView(){
                                                     <th>CLIENTE</th>
                                                     <th>COSTO</th>
                                                     <th>IMPORTE</th>
-                                                    <th>UTILIDAD</th>
+                                                    <th>UTILIDAD BRUTA</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="tblDataClientes">
@@ -353,7 +353,7 @@ function getView(){
                     <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12">
                         <div class="card card-rounded shadow col-12">
                             <div class="card-body p-2">
-                                <div class="col-12" id="rootMapa">
+                                <div class="col-12" id="rootMapa"></div>
                             
                                   
 
@@ -374,12 +374,13 @@ function getView(){
                     <div class="card-body p-4">
 
                         <div class="row">
-                            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                                 
                                 <div class="form-group">
                                     <label>Ruta</label>
                                     <select class="form-control negrita" id="cmbVisitaRuta">
-                                        <option value="LUNES">LUNES</option>
+                                                <option value="">TODOS</option>
+                                                <option value="LUNES">LUNES</option>
                                                 <option value="MARTES">MARTES</option>
                                                 <option value="MIERCOLES">MIERCOLES</option>
                                                 <option value="JUEVES">JUEVES</option>
@@ -390,10 +391,16 @@ function getView(){
                                 </div>
 
                             </div>
-                            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
                                 <div class="form-group">
-                                    <label>Fecha</label>
-                                    <input type="date" class="form-control negrita" id="txtVisitaFecha"> 
+                                    <label>Fecha Inicio</label>
+                                    <input type="date" class="form-control negrita" id="txtVisitaFechaInicial"> 
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+                                <div class="form-group">
+                                    <label>Fecha Fin</label>
+                                    <input type="date" class="form-control negrita" id="txtVisitaFechaFinal"> 
                                 </div>
                             </div>
                             
@@ -411,14 +418,18 @@ function getView(){
                         <div class="table-responsive">
                             
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <h3 class="negrita text-danger">Clientes No Visitados</h3>
                                 </div>
-                                <div class="col-6">
-                                
+                                <div class="col-4">                            
                                     <h5 class="negrita text-info" id="lbVisitadosConteo"></h5>
-    
-                                
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-success btn-md hand shadow" 
+                                    onclick="F.exportTableToExcel('tblVisitados','clientes_visitados')">
+                                        <i class="fal fa-export"></i>Exportar xls
+                                    </button>
+                                                                  
                                 </div>
                             </div>
 
@@ -426,10 +437,13 @@ function getView(){
                             <table class="table table-bordered col-12 h-full" id="tblVisitados">
                                 <thead class="bg-secondary text-white">
                                     <tr>
-                                        <td>RUTERO</td>
+                                        <td>RUTA</td>
+                                        <td>VISITA</td>
                                         <td>CLIENTE</td>
                                         <td>DIRECCION</td>
+                                        <td></td>
                                         <td>TELEFONO</td>
+                                        <td>IMPORTE</td>
                                     </tr>
                                 </thead>
                                 <tbody id="tblDataVisitados">
@@ -520,12 +534,20 @@ function addListeners(){
 
 
 
-        document.getElementById('txtVisitaFecha').value = F.getFecha();
+        document.getElementById('txtVisitaFechaInicial').value = F.getFecha();        
+        document.getElementById('txtVisitaFechaFinal').value = F.getFecha();
 
-        document.getElementById('txtVisitaFecha').addEventListener('change',()=>{
+        document.getElementById('txtVisitaFechaInicial').addEventListener('change',()=>{
             rpt_tbl_visitados();
         });
 
+        document.getElementById('txtVisitaFechaFinal').addEventListener('change',()=>{
+            rpt_tbl_visitados();
+        });
+
+        document.getElementById('cmbVisitaRuta').addEventListener('change',()=>{
+            F.FiltrarTabla('tblVisitados','cmbVisitaRuta')
+        })
 
         document.getElementById('btnMenuVisitados').addEventListener('click',()=>{
 
@@ -537,9 +559,6 @@ function addListeners(){
 
 
 
-        document.getElementById('btnMenuVisitados').addEventListener('change',()=>{
-            rpt_tbl_visitados();
-        });
 
 };
 
@@ -554,14 +573,14 @@ function initView(){
 
 //reporte visitados
 
-function get_data_visitados(visita,fecha){
+function get_data_visitados(fi,ff){
 
     return new Promise((resolve,reject)=>{
 
                 axios.post('/rpt_ventas_visitados', 
                     {
-                        visita:visita,
-                        fecha:fecha
+                        fi:fi,
+                        ff:ff
                     }
                 ).then((response) => {
                     let data = response.data;
@@ -582,37 +601,58 @@ function get_data_visitados(visita,fecha){
 function rpt_tbl_visitados(){
 
 
-    let visita = document.getElementById('cmbVisitaRuta').value;
-    let fecha = F.devuelveFecha('txtVisitaFecha');
+    document.getElementById('cmbVisitaRuta').value='';
+
+    let fi = F.devuelveFecha('txtVisitaFechaInicial');
+    let ff = F.devuelveFecha('txtVisitaFechaFinal');
+
 
     let container = document.getElementById('tblDataVisitados');
     container.innerHTML = GlobalLoader;
 
-    let contador = 0;
+    document.getElementById('lbVisitadosConteo').innerText = '';
 
-    get_data_visitados(visita,fecha)
+    let contador = 0;
+    let varTotal = 0;
+
+    get_data_visitados(fi,ff)
     .then((data)=>{
 
         let str = '';
         data.recordset.map((r)=>{
             contador +=1;
+            varTotal += Number(r.IMPORTE)
             str += `
             <tr>
-                <td>${r.RUTERO}</td>
-                <td>${r.TIPONEGOCIO} - ${r.NOMCLIE}</td>
-                <td>${r.DIRCLIE}
+                <td>${r.RUTA}</td>
+                 <td>${r.VISITA}</td>
+                <td>${r.NOMCLIE}
+                    <br>
+                    <small class="negrita text-info">${r.TIPO}</small>
+                </td>
+                <td>${r.DIRECCION}
                     <br>
                     <small>${r.REFERENCIA}</small>
                 </td>
+                <td>
+                    <button class="btn btn-circle btn-md btn-info hand shadow" 
+                    onclick="F.gotoGoogleMaps('${r.LATITUD}','${r.LONGITUD}')">
+                        <i class="fal fa-map"></i>
+                    </button>
+                </td>
                 <td>${r.TELEFONO}</td>
+                <td>${F.setMoneda(r.IMPORTE,'Q')}</td>
             </tr>
             `
         })
 
         container.innerHTML = str;
-        document.getElementById('lbVisitadosConteo').innerText = `Total: ${contador}`;
+        document.getElementById('lbVisitadosConteo').innerText = `Total: ${F.setMoneda(varTotal,'Q')}`;
+
     })
-    .catch(()=>{
+    .catch((err)=>{
+        console.log(err)
+
         container.innerHTML = 'No se cargaron datos';
         document.getElementById('lbVisitadosConteo').innerText = '';
     })
