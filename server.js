@@ -163,10 +163,11 @@ SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
         WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND 
         (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
   FROM POS_CLIENTES
-  WHERE POS_CLIENTS.VISITA LIKE '%${visita}%'
+  WHERE VISITA LIKE '%${visita}%'
   ORDER BY IMPORTE
           `;
 
+          console.log(qry);
 
   execute.Query(res,qry)
 
