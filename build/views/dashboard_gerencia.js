@@ -443,7 +443,6 @@ function getView(){
                                         <td>DIRECCION</td>
                                         <td></td>
                                         <td>TELEFONO</td>
-                                        <td>IMPORTE</td>
                                     </tr>
                                 </thead>
                                 <tbody id="tblDataVisitados">
@@ -647,7 +646,7 @@ function rpt_tbl_visitados(){
                     </button>
                 </td>
                 <td>${r.TELEFONO}</td>
-                <td>${F.setMoneda(r.IMPORTE,'Q')}</td>
+                
             </tr>
             `
             }

@@ -63,11 +63,17 @@ function getView(){
                             <div class="col-4">
                                 <div class="form-group">
                                     <label>Filtrar por</label>
-                                    <select class="form-control negrita text-danger" id="cmbFiltrar">
-                                        <option value="TODOS">TODOS</option>
-                                        <option value="GARRAFON">CON GARRAFON</option>
-                                        <option value="SIN">SIN GARRAFON</option>
-                                    </select>
+                                    <div class="input-group">
+                                        <select class="form-control negrita text-danger" id="cmbFiltrar">
+                                            <option value="TODOS">TODOS</option>
+                                            <option value="GARRAFON">CON GARRAFON</option>
+                                            <option value="SIN">SIN GARRAFON</option>
+                                        </select>
+                                        <button class="btn btn-success btn-md hand shadow" 
+                                            onclick="F.exportTableToExcel('tblClientes','Catalogo_clientes_general')">
+                                                <i class="fal fa-export"></i>Exportar xls
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-4">
