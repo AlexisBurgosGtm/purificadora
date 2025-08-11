@@ -620,11 +620,14 @@ function rpt_tbl_visitados(){
 
     get_data_visitados(fi,ff,visita)
     .then((data)=>{
-
+        
         let str = '';
         data.recordset.map((r)=>{
             contador +=1;
             varTotal += Number(r.IMPORTE)
+            
+            //solo dejo los que no se les vendio y dejo el importe total para referencia
+            if(Number(r.IMPORTE)==0){
             str += `
             <tr>
                 <td>${r.RUTA}</td>
@@ -647,6 +650,8 @@ function rpt_tbl_visitados(){
                 <td>${F.setMoneda(r.IMPORTE,'Q')}</td>
             </tr>
             `
+            }
+            
         })
 
         container.innerHTML = str;
