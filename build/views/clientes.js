@@ -90,6 +90,7 @@ function getView(){
                             <table class="table table-hover col-12" id="tblClientes">
                                 <thead class="bg-naranja text-white">
                                     <tr>
+                                        <td>INICIO</td>
                                         <td>TIPO</td>
                                         <td>NOMBRE</td>
                                         <td>DIRECCION</td>
@@ -337,10 +338,8 @@ function get_catalogo_clientes() {
                 let idBtnEC = `idBtnEC${r.CODCLIE}`;
                 str += `
                         <tr>
-                            <td>${r.TIPO}
-                                <br>
-                                <small class="negrita text-danger">Creado: ${F.convertDateNormal(r.FECHA).replace('01/01/2000','-----')}</small>
-                            </td>
+                            <td> ${F.convertDateNormal(r.FECHA).replace('01/01/2000','-----')}</td>
+                            <td>${r.TIPO}</td>
                             <td>${r.NOMBRE.toUpperCase()}</td>
                             <td>${r.DIRECCION.toUpperCase()}</td>
                             <td>${r.TELEFONO}</td>
