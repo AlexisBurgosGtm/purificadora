@@ -379,7 +379,7 @@ function getView(){
                                 <div class="form-group">
                                     <label>Ruta</label>
                                     <select class="form-control negrita" id="cmbVisitaRuta">
-                                                <option value="">TODOS</option>
+                                                <option value="%">TODOS</option>
                                                 <option value="LUNES">LUNES</option>
                                                 <option value="MARTES">MARTES</option>
                                                 <option value="MIERCOLES">MIERCOLES</option>
@@ -546,7 +546,8 @@ function addListeners(){
         });
 
         document.getElementById('cmbVisitaRuta').addEventListener('change',()=>{
-            F.FiltrarTabla('tblVisitados','cmbVisitaRuta')
+            //F.FiltrarTabla('tblVisitados','cmbVisitaRuta')
+            rpt_tbl_visitados();
         })
 
         document.getElementById('btnMenuVisitados').addEventListener('click',()=>{
@@ -573,14 +574,15 @@ function initView(){
 
 //reporte visitados
 
-function get_data_visitados(fi,ff){
+function get_data_visitados(fi,ff,visita){
 
     return new Promise((resolve,reject)=>{
 
                 axios.post('/rpt_ventas_visitados', 
                     {
                         fi:fi,
-                        ff:ff
+                        ff:ff,
+                        visita:visita
                     }
                 ).then((response) => {
                     let data = response.data;
@@ -601,10 +603,11 @@ function get_data_visitados(fi,ff){
 function rpt_tbl_visitados(){
 
 
-    document.getElementById('cmbVisitaRuta').value='';
+    //document.getElementById('cmbVisitaRuta').value='';
 
     let fi = F.devuelveFecha('txtVisitaFechaInicial');
     let ff = F.devuelveFecha('txtVisitaFechaFinal');
+    let visita = document.getElementById('cmbVisitaRuta').value;
 
 
     let container = document.getElementById('tblDataVisitados');
@@ -615,7 +618,7 @@ function rpt_tbl_visitados(){
     let contador = 0;
     let varTotal = 0;
 
-    get_data_visitados(fi,ff)
+    get_data_visitados(fi,ff,visita)
     .then((data)=>{
 
         let str = '';

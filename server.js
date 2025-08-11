@@ -149,23 +149,43 @@ app.post("/rpt_clientes_ruta",function(req,res){
 
 app.post("/rpt_ventas_visitados",function(req,res){
 
-  const {fi,ff} = req.body;
+  const {fi,ff,visita} = req.body;
 
   let qry = `
-SELECT CODCLIE
-      ,TIPO
-      ,NOMBRE as NOMCLIE
-      ,DIRECCION
-      ,TELEFONO
-      ,REFERENCIA
-      ,VISITA
+SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
+    DIRECCION,TELEFONO,REFERENCIA  ,VISITA
       ,LATITUD
       ,LONGITUD
       ,RUTA
       ,GARRAFONES
-	  , ISNULL((SELECT SUM(TOTALPRECIO)
+	    ,ISNULL((SELECT SUM(TOTALPRECIO)
 			FROM RPT_CLIENTES_VISITADOS_VENTAS
-        WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
+        WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND 
+        (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
+  FROM POS_CLIENTES
+  WHERE POS_CLIENTS.VISITA LIKE '%${visita}%'
+  ORDER BY IMPORTE
+          `;
+
+
+  execute.Query(res,qry)
+
+}); 
+app.post("/BACKUP_rpt_ventas_visitados",function(req,res){
+
+  const {fi,ff} = req.body;
+
+  let qry = `
+SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
+    DIRECCION,TELEFONO,REFERENCIA  ,VISITA
+      ,LATITUD
+      ,LONGITUD
+      ,RUTA
+      ,GARRAFONES
+	    ,ISNULL((SELECT SUM(TOTALPRECIO)
+			FROM RPT_CLIENTES_VISITADOS_VENTAS
+        WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND 
+        (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
   FROM POS_CLIENTES
   ORDER BY IMPORTE
           `;
