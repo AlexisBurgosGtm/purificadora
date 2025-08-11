@@ -731,17 +731,17 @@ function get_lista_clientes(){
             data.recordset.map((r)=>{
                 str += `
                                 <tr class="hand" >
-                                    <td>${r.NOMBRE}
+                                    <td>${r.NOMBRE.toUpperCase()}
                                         <br>
                                         <small class="negrita text-info">Tel:${r.TELEFONO}</small>
                                         <br>
-                                         <button class="btn btn-info btn-sm hand shadow" onclick="go_to_edit('${r.CODCLIE}','${r.NOMBRE}','${r.REFERENCIA}','${r.DIRECCION}','${r.TELEFONO}','${r.GARRAFONES}')">
+                                         <button class="btn btn-info btn-sm hand shadow" onclick="go_to_edit('${r.CODCLIE}','${r.NOMBRE.toUpperCase()}','${r.REFERENCIA.toUpperCase()}','${r.DIRECCION.toUpperCase()}','${r.TELEFONO}','${r.GARRAFONES}')">
                                             <i class="fal fa-edit"></i>Editar
                                         </button>
                                     </td>
-                                    <td>${r.DIRECCION}
+                                    <td>${r.DIRECCION.toUpperCase()}
                                         <br>
-                                        <small class="negrita text-secondary">${r.REFERENCIA}</small>
+                                        <small class="negrita text-secondary">${r.REFERENCIA.toUpperCase()}</small>
                                         <br>
                                         <button class="btn btn-success btn-sm hand shadow" onclick="go_to_pedido('${r.CODCLIE}','${r.NOMBRE}')">
                                             <i class="fal fa-plus"></i>Pedido

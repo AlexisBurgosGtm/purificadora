@@ -341,29 +341,29 @@ function get_catalogo_clientes() {
                                 <br>
                                 <small class="negrita text-danger">Creado: ${F.convertDateNormal(r.FECHA).replace('01/01/2000','-----')}</small>
                             </td>
-                            <td>${r.NOMBRE}</td>
-                            <td>${r.DIRECCION}</td>
+                            <td>${r.NOMBRE.toUpperCase()}</td>
+                            <td>${r.DIRECCION.toUpperCase()}</td>
                             <td>${r.TELEFONO}</td>
-                            <td>${r.REFERENCIA}</td>
+                            <td>${r.REFERENCIA.toUpperCase()}</td>
                             <td>${r.VISITA}</td>
                             <td>${r.RUTA}</td>
                             <td>${r.GARRAFONES}</td>
                             <td>
                                    <button class="btn btn-warning btn-circle btn-md hand shadow" 
-                                    onclick="get_historial_cliente('${r.CODCLIE}','${r.NOMBRE}','${r.DIRECCION}')">
+                                    onclick="get_historial_cliente('${r.CODCLIE}','${r.NOMBRE.toUpperCase()}','${r.DIRECCION.toUpperCase()}')">
                                         <i class="fal fa-list"></i>
                                     </button>
 
                             </td>
                             <td>
                                    <button class="btn btn-info btn-circle btn-md hand shadow" 
-                                    onclick="get_datos_cliente('${r.CODCLIE}','${r.TIPO}','${r.NOMBRE}','${r.DIRECCION}','${r.TELEFONO}','${r.REFERENCIA}','${r.VISITA}','${r.RUTA}','${r.GARRAFONES}')">
+                                    onclick="get_datos_cliente('${r.CODCLIE}','${r.TIPO}','${r.NOMBRE.toUpperCase()}','${r.DIRECCION.toUpperCase()}','${r.TELEFONO}','${r.REFERENCIA.toUpperCase()}','${r.VISITA}','${r.RUTA}','${r.GARRAFONES}')">
                                         <i class="fal fa-edit"></i>
                                     </button>
                             </td>
                             <td>
                                    <button id="${idBtnEC}" class="btn btn-danger btn-circle btn-md hand shadow" 
-                                    onclick="eliminar_cliente('${r.CODCLIE}','${r.NOMBRE}','${idBtnEC}')">
+                                    onclick="eliminar_cliente('${r.CODCLIE}','${r.NOMBRE.toUpperCase()}','${idBtnEC}')">
                                         <i class="fal fa-trash"></i>
                                     </button>
                             </td>
