@@ -956,7 +956,10 @@ function get_tbl_clientes(){
             }
         }, 500);
     })
-    .catch(()=>{
+    .catch((error)=>{
+        
+        console.log(error);
+
         document.getElementById('lbTotalClientes').textContent = '--.--'
         container.innerHTML ='No se cargaron datos...'
     })
