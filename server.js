@@ -310,6 +310,39 @@ app.post("/lista_clientes_general",function(req,res){
   execute.Query(res,qry)
 
 });
+app.post("/lista_clientes_general_export",function(req,res){
+
+  const {tipo} = req.body;
+
+  let qry = '';
+
+  switch (tipo) {
+    case 'TODOS':
+        qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,
+                VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA,
+                CONVERT(VARCHAR(10), ISNULL(FECHA,'2000-01-01'), 103) AS FECHA
+              FROM POS_CLIENTES;`
+      break;
+    case 'GARRAFON':
+      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,
+              VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA,
+              CONVERT(VARCHAR(10), ISNULL(FECHA,'2000-01-01'), 103) AS FECHA
+              FROM POS_CLIENTES WHERE GARRAFONES > 0;`
+      break;
+    case 'SIN':
+      qry = `SELECT CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,
+            VISITA,LATITUD,LONGITUD,GARRAFONES,RUTA,
+            CONVERT(VARCHAR(10), ISNULL(FECHA,'2000-01-01'), 103) AS FECHA
+              FROM POS_CLIENTES WHERE GARRAFONES = 0;`
+      break;
+  }
+
+
+
+
+  execute.Query(res,qry)
+
+});
 
 app.post("/lista_clientes_historial",function(req,res){
 

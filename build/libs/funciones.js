@@ -558,6 +558,16 @@ let F = {
       window.print();
       document.body.innerHTML = contenidoOriginal;
       
+    },
+    export_json_to_xlsx:(data,nombre)=>{
+
+         
+          filename= nombre.toString() + '.xlsx'; 
+          var ws = XLSX.utils.json_to_sheet(data); 
+          var wb = XLSX.utils.book_new(); 
+          XLSX.utils.book_append_sheet(wb, ws, "rpt"); 
+          XLSX.writeFile(wb,filename); 
+
     }
 };
 

@@ -69,7 +69,86 @@ function getView(){
                                             <option value="GARRAFON">CON GARRAFON</option>
                                             <option value="SIN">SIN GARRAFON</option>
                                         </select>
+                                        <button class="btn btn-success btn-md hand shadow" id="btnExportarClientes">
+                                                <i class="fal fa-export"></i>Exportar Todos
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <h4 class="negrita text-info" id="lbTotalClientes">0</h4>
+                                <h4 class="negrita text-danger" id="lbTotalGarrafones">0</h4>
+                            </div>
+                        </div>
+                        
+                        <br>
+                        
+
+                        <div class="table-responsive">
+
+                            <table class="table table-hover col-12" id="tblClientes">
+                                <thead class="bg-naranja text-white">
+                                    <tr>
+                                        <td>INICIO</td>
+                                        <td>TIPO</td>
+                                        <td>NOMBRE</td>
+                                        <td>DIRECCION</td>
+                                        <td>TELEFONO</td>
+                                        <td>REFERENCIA</td>
+                                        <td>VISITA</td>
+                                        <td>RUTA</td>
+                                        <td>GARRAFONES</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblDataClientesCatalogo">
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            `
+        },
+        BACKUP_vista_listado:()=>{
+            return `
+            <div class="card card-rounded shadow">
+                <div class="card-body p-2">
+                    <div class="row">
+                        <div class="col-md-6 d-flex align-items-center mb-3">
+                            <h1 style="font-size:280%" class="negrita text-left">Clientes</h1>
+                        </div>
+                        <div class="cold-md-6">
+                            
+                        </div>
+                    </div>
+                    <div class="col-12">
+
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label>Escriba para Buscar un cliente</label>
+                                    <input type="text" 
+                                    class="form-control negrita text-naranja" 
+                                    oninput="F.FiltrarTabla('tblClientes','txtBuscar')" 
+                                    id="txtBuscar"
+                                    placeholder="Escriba para buscar...">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label>Filtrar por</label>
+                                    <div class="input-group">
+                                        <select class="form-control negrita text-danger" id="cmbFiltrar">
+                                            <option value="TODOS">TODOS</option>
+                                            <option value="GARRAFON">CON GARRAFON</option>
+                                            <option value="SIN">SIN GARRAFON</option>
+                                        </select>
                                         <button class="btn btn-success btn-md hand shadow" 
+                                            id="btnExportarClientes"
                                             onclick="F.exportTableToExcel('tblClientes','Catalogo_clientes_general')">
                                                 <i class="fal fa-export"></i>Exportar xls
                                         </button>
@@ -302,6 +381,40 @@ function addListeners(){
     })
 
     get_catalogo_clientes();
+
+
+
+    let btnExportarClientes = document.getElementById('btnExportarClientes');
+    btnExportarClientes.addEventListener('click',()=>{
+
+        btnExportarClientes.disabled = true;
+        btnExportarClientes.innerHTML = `<i class="fal fa-export fa-spin"></i>Exportando...`;
+        
+        
+        data_clientes()
+        .then((data)=>{
+
+
+            let datos = data.recordset;
+
+            F.export_json_to_xlsx(datos,'ListadoGeneralClientes');
+
+            btnExportarClientes.disabled = false;
+            btnExportarClientes.innerHTML = `<i class="fal fa-export"></i>Exportar Todos`;
+        
+        })
+        .catch(()=>{
+
+            F.AvisoError('No se pudo exportar');
+            
+            btnExportarClientes.disabled = false;
+            btnExportarClientes.innerHTML = `<i class="fal fa-export"></i>Exportar Todos`;
+            
+        })
+
+
+    })
+
 
 };
 
@@ -562,3 +675,28 @@ function get_historial_cliente(codclie,nomclie,direccion){
 
 
 };
+
+
+
+function data_clientes() {
+    return new Promise((resolve, reject) => {
+
+        let tipo = document.getElementById('cmbFiltrar').value;
+    
+        axios.post('/lista_clientes_general_export', {
+            filtro:'',
+            tipo:tipo
+        })
+        .then((response) => {
+            let data = response.data;
+            if(Number(data.rowsAffected[0])>0) {
+                resolve(data);
+            } else {
+                reject();
+            }
+        }, (error) => {
+            reject();
+        });
+
+    })
+}
