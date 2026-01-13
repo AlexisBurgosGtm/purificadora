@@ -425,8 +425,7 @@ function getView(){
                                     <h5 class="negrita text-info" id="lbVisitadosConteo"></h5>
                                 </div>
                                 <div class="col-4">
-                                    <button class="btn btn-success btn-md hand shadow" 
-                                    onclick="F.exportTableToExcel('tblVisitados','clientes_visitados')">
+                                    <button class="btn btn-success btn-md hand shadow" id="btnExportarNoVisitados">
                                         <i class="fal fa-export"></i>Exportar xls
                                     </button>
                                                                   
@@ -559,6 +558,40 @@ function addListeners(){
 
 
 
+        let btnExportarNoVisitados = document.getElementById('btnExportarNoVisitados');
+        btnExportarNoVisitados.addEventListener('click',()=>{
+
+                btnExportarNoVisitados.disabled = true;
+                btnExportarNoVisitados.innerHTML = `<i class="fal fa-export fa-spin"></i>Exportando...`;
+                
+                
+                let fi = F.devuelveFecha('txtVisitaFechaInicial');
+                let ff = F.devuelveFecha('txtVisitaFechaFinal');
+                let visita = document.getElementById('cmbVisitaRuta').value;
+
+                get_data_visitados_export(fi,ff,visita)
+                .then((data)=>{
+
+
+                    let datos = data.recordset;
+
+                    F.export_json_to_xlsx(datos,'ClientesNoVisitados');
+
+                    btnExportarNoVisitados.disabled = false;
+                    btnExportarNoVisitados.innerHTML = `<i class="fal fa-export"></i>Exportar xls`;
+                
+                })
+                .catch(()=>{
+
+                    F.AvisoError('No se pudo exportar');
+                    
+                    btnExportarNoVisitados.disabled = false;
+                    btnExportarNoVisitados.innerHTML = `<i class="fal fa-export"></i>Exportar xls`;
+                    
+                })
+
+
+        })
 
 };
 
@@ -569,8 +602,6 @@ function initView(){
 
 };
 
-
-
 //reporte visitados
 
 function get_data_visitados(fi,ff,visita){
@@ -578,6 +609,31 @@ function get_data_visitados(fi,ff,visita){
     return new Promise((resolve,reject)=>{
 
                 axios.post('/rpt_ventas_visitados', 
+                    {
+                        fi:fi,
+                        ff:ff,
+                        visita:visita
+                    }
+                ).then((response) => {
+                    let data = response.data;
+                    if(Number(data.rowsAffected[0])>0) {
+                        resolve(data);
+                    } else {
+                        reject();
+                    }
+                }, (error) => {
+                    reject();
+                });
+
+    })
+
+
+};
+function get_data_visitados_export(fi,ff,visita){
+
+    return new Promise((resolve,reject)=>{
+
+                axios.post('/rpt_ventas_visitados_export', 
                     {
                         fi:fi,
                         ff:ff,

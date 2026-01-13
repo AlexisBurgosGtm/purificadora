@@ -158,19 +158,19 @@ app.post("/rpt_ventas_visitados",function(req,res){
   const {fi,ff,visita} = req.body;
 
   let qry = `
-SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
-    DIRECCION,TELEFONO,REFERENCIA  ,VISITA
-      ,ISNULL(LATITUD,0) AS LATITUD
-      ,ISNULL(LONGITUD,0) AS LONGITUD
-      ,RUTA
-      ,GARRAFONES
-	    ,ISNULL((SELECT SUM(TOTALPRECIO)
-			FROM RPT_CLIENTES_VISITADOS_VENTAS
-        WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND 
-        (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
-  FROM POS_CLIENTES
-  WHERE VISITA LIKE '%${visita}%'
-  ORDER BY IMPORTE
+        SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
+            DIRECCION,TELEFONO,REFERENCIA  ,VISITA
+              ,ISNULL(LATITUD,0) AS LATITUD
+              ,ISNULL(LONGITUD,0) AS LONGITUD
+              ,RUTA
+              ,GARRAFONES
+              ,ISNULL((SELECT SUM(TOTALPRECIO)
+              FROM RPT_CLIENTES_VISITADOS_VENTAS
+                WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND 
+                (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
+          FROM POS_CLIENTES
+          WHERE VISITA LIKE '%${visita}%'
+          ORDER BY IMPORTE
           `;
 
           console.log(qry);
@@ -178,29 +178,29 @@ SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
   execute.Query(res,qry)
 
 }); 
-app.post("/BACKUP_rpt_ventas_visitados",function(req,res){
+app.post("/rpt_ventas_visitados_export",function(req,res){
 
-  const {fi,ff} = req.body;
+  const {fi,ff,visita} = req.body;
 
   let qry = `
-SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
-    DIRECCION,TELEFONO,REFERENCIA  ,VISITA
-      ,LATITUD
-      ,LONGITUD
-      ,RUTA
-      ,GARRAFONES
-	    ,ISNULL((SELECT SUM(TOTALPRECIO)
-			FROM RPT_CLIENTES_VISITADOS_VENTAS
-        WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND 
-        (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
-  FROM POS_CLIENTES
-  ORDER BY IMPORTE
+        SELECT CODCLIE,TIPO,NOMBRE as NOMCLIE,
+            DIRECCION,TELEFONO,REFERENCIA  ,VISITA,
+              CONCAT('=HIPERVINCULO("','https://www.google.com/maps?q=', ISNULL(LATITUD,0), ',', ISNULL(LONGITUD,0),'")') AS UBICACION,
+              RUTA, GARRAFONES, ISNULL((SELECT SUM(TOTALPRECIO)
+        FROM RPT_CLIENTES_VISITADOS_VENTAS
+                WHERE  (FECHA BETWEEN '${fi}' AND '${ff}') AND 
+                (CODCLIE = POS_CLIENTES.CODCLIE)),0) AS IMPORTE
+          FROM POS_CLIENTES
+          WHERE VISITA LIKE '%${visita}%'
+          ORDER BY IMPORTE
           `;
 
+          console.log(qry);
 
   execute.Query(res,qry)
 
 }); 
+
 
 
 app.post("/insert_pedido", function(req, res) {

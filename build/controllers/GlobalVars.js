@@ -1,6 +1,6 @@
 let map; //mapa de leaflet
 
-let versionapp = "Modif: 02.01.2026.0"
+let versionapp = "Modif: 13.01.2026.0"
 
 
 
