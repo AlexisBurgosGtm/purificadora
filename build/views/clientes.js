@@ -178,6 +178,7 @@ function getView(){
                                         <td>VISITA</td>
                                         <td>RUTA</td>
                                         <td>GARRAFONES</td>
+                                        <td>ACTIVO</td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -449,6 +450,19 @@ function get_catalogo_clientes() {
                 contador += 1;
                 garrafones += Number(r.GARRAFONES);
                 let idBtnEC = `idBtnEC${r.CODCLIE}`;
+                let btnActivarClie = `idBtnACT${r.CODCLIE}`;
+                let btnActivo = '';
+                if(r.ACTIVO=='SI'){
+                    btnActivo = `<button class="btn btn-success btn-sm hand shadow" id="${btnActivarClie}"
+                                    onclick="activar_cliente('${r.CODCLIE}','NO','${btnActivarClie}')">
+                                        DESACTIVAR
+                                </button>`
+                }else{
+                     btnActivo = `<button class="btn btn-danger btn-sm hand shadow" id="${btnActivarClie}"
+                                    onclick="activar_cliente('${r.CODCLIE}','SI','${btnActivarClie}')">
+                                        ACTIVAR
+                                </button>`
+                }
                 str += `
                         <tr>
                             <td> ${F.convertDateNormal(r.FECHA).replace('01/01/2000','-----')}</td>
@@ -460,6 +474,7 @@ function get_catalogo_clientes() {
                             <td>${r.VISITA}</td>
                             <td>${r.RUTA}</td>
                             <td>${r.GARRAFONES}</td>
+                            <td>${btnActivo}</td>
                             <td>
                                    <button class="btn btn-warning btn-circle btn-md hand shadow" 
                                     onclick="get_historial_cliente('${r.CODCLIE}','${r.NOMBRE.toUpperCase()}','${r.DIRECCION.toUpperCase()}')">
@@ -497,6 +512,55 @@ function get_catalogo_clientes() {
         document.getElementById('lbTotalGarrafones').innerText = '0';
     });
     
+};
+function activar_cliente(codclie,activo, idbtn){
+
+    let btn = document.getElementById(idbtn);
+
+    F.Confirmacion('¿Está seguro que desea ACTUALIZAR EL ESTATUS del cliente?')
+    .then((value)=>{
+        if(value==true){
+
+                btn.disabled = true;
+                F.showToast('Actualizando cliente...');
+
+                fcn_activar_clie(codclie,activo)
+                .then(()=>{
+                    btn.disabled = false;
+                    F.Aviso('Cliente actualizado exitosamente!!');
+                    get_catalogo_clientes();  
+                })
+                .catch(()=>{
+                    F.AvisoError('No se pudo actualizar');
+                    btn.disabled = false;
+                })
+
+
+
+        }
+    })
+
+
+};
+function fcn_activar_clie(codcliente,activo){
+     return new Promise((resolve, reject) => {
+
+        axios.post('/activar_cliente', {
+            codclie:codcliente,
+            activo:activo
+        })
+        .then((response) => {
+            let data = response.data;
+            if(Number(data.rowsAffected[0])>0) {
+                resolve(data);
+            } else {
+                reject();
+            }
+        }, (error) => {
+            reject();
+        });
+
+    })
 }
 
 function update_cliente(codclie,tipo,nombre,direccion,telefono,referencia,visita,ruta,garrafones) {
