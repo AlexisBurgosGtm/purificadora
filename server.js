@@ -267,11 +267,21 @@ app.post("/lista_clientes",function(req,res){
 
     const {filtro,ruta} = req.body;
 
-    let qry = `SELECT top 70 CODCLIE, TIPO,NOMBRE,DIRECCION,TELEFONO,
-      REFERENCIA,VISITA,LATITUD,LONGITUD,GARRAFONES,
-      ISNULL(FECHA,'2000-01-01') AS FECHA
-      FROM POS_CLIENTES WHERE NOMBRE LIKE '%${filtro}%' AND RUTA='${ruta}';`
-
+    let qry = `
+      SELECT 
+            top 70 CODCLIE, 
+            TIPO,
+            NOMBRE,
+            DIRECCION,
+            TELEFONO,
+            REFERENCIA,
+            VISITA,
+            LATITUD,
+            LONGITUD,
+            GARRAFONES,
+            ISNULL(FECHA,'2000-01-01') AS FECHA
+      FROM POS_CLIENTES WHERE NOMBRE LIKE '%${filtro}%' AND RUTA='${ruta}' 
+          AND ISNULL(ACTIVO,'SI')='SI'; `
 
     execute.Query(res,qry)
 
@@ -365,16 +375,25 @@ app.post("/insert_cliente",function(req,res){
 
   let qry = `INSERT INTO POS_CLIENTES 
               (TIPO,NOMBRE,DIRECCION,TELEFONO,REFERENCIA,VISITA,
-              LATITUD,LONGITUD,RUTA,GARRAFONES,FECHA)
+              LATITUD,LONGITUD,RUTA,GARRAFONES,FECHA,ACTIVO)
                 VALUES
               ('${tipo}','${nombre}','${direccion}','${telefono}',
               '${referencia}','${visita}','${latitud}','${longitud}',
-              '${ruta}',${garrafones},'${fecha}');
+              '${ruta}',${garrafones},'${fecha}','SI');
             `
 
             console.log(qry)
 
   execute.Query(res,qry)
+
+});
+app.post("/activar_cliente",function(req,res){
+
+      const {codclie,activo} = req.body;
+
+      let qry = `UPDATE POS_CLIENTES SET ACTIVO='${activo}' WHERE CODCLIE=${codclie};`
+
+      execute.Query(res,qry)
 
 }); 
 
